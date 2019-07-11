@@ -46,7 +46,7 @@ gem install 'aws-rails-provisioner' -v 0.0.0.rc1
 
 ### Define aws-rails-provisioner.yml
 
-`aws-rails-provisioner.yml` is a configuration file defining how `aws-rails-provisioner` boostrap required AWS resources
+`aws-rails-provisioner.yml` is a configuration file defining how `aws-rails-provisioner` bootstraps required AWS resources
 for your Ruby on Rails applications.
 
 ```
