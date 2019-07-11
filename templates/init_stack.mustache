@@ -1,0 +1,50 @@
+import cdk = require('@aws-cdk/core');
+{{#services}}
+import {{.}} = require('@aws-cdk/aws-{{.}}');
+{{/services}}
+
+export class {{stack_prefix}}InitStack extends cdk.Stack {
+    public readonly vpc: ec2.IVpc;
+    public readonly cluster: ecs.ICluster;
+
+    constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
+
+        {{#vpc}}
+        // Setting up VPC with subnets
+        const vpc = new ec2.Vpc(this, 'Vpc', {
+            maxAzs: {{max_azs}},
+            cidr: '{{cidr}}',
+            {{#enable_dns}}
+            enableDnsSupport: true,
+            {{/enable_dns}}
+            natGateways: {{nat_gateways}},
+            {{#nat_gateway_subnets}}
+            natGatewaySubnets: {
+                {{#name}}
+                subnetName: '{{.}}'
+                {{/name}}
+                {{#type}}
+                subnetType: ec2.SubnetType.{{.}}
+                {{/type}}
+            },
+            {{/nat_gateway_subnets}}
+            subnetConfiguration: [
+              {{#subnets}}
+                {
+                  cidrMask: {{cidr_mask}},
+                  name: '{{subnet_name}}',
+                  subnetType: ec2.SubnetType.{{type}}
+                },
+              {{/subnets}}
+            ]
+        });
+        this.vpc = vpc;
+        {{/vpc}}
+
+        this.cluster = new ecs.Cluster(this, 'FargateCluster', {
+            vpc: vpc  
+        });
+
+    }
+}

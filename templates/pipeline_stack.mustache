@@ -1,0 +1,156 @@
+import cdk = require('@aws-cdk/core');
+{{#services}}
+import {{abbr}} = require('@aws-cdk/aws-{{value}}');
+{{/services}}
+
+interface {{stack_prefix}}PipelineStackProps {
+    vpc: ec2.IVpc,
+    dbUrl: string,
+    repoName: string,
+    service: ecs.FargateService,
+    db: rds.DatabaseCluster
+}
+
+export class {{stack_prefix}}PipelineStack extends cdk.Stack {
+    constructor(scope: cdk.App, id: string, props: {{stack_prefix}}PipelineStackProps) {
+        super(scope, id);
+
+        const pipeline = new codepipeline.Pipeline(this, 'FargatePipeline', {
+            pipelineName: '{{pipeline_name}}',
+        });
+
+        const repo = new codecommit.Repository(this, 'CodeCommitRepo', {
+            repositoryName: '{{source_repo}}',
+            description: '{{source_description}}'
+        });
+
+        const sourceOutput = new codepipeline.Artifact();
+        const sourceStage = pipeline.addStage({
+            stageName: 'Source',
+            actions: [
+                new pipelineactions.CodeCommitSourceAction({
+                    actionName: 'SourceAction',
+                    repository: repo,
+                    output: sourceOutput
+                })
+            ]
+        });
+
+        const ecrRepo = ecr.Repository.fromRepositoryName(this, 'ImageRepo', props.repoName);
+
+        const role = new iam.Role(this, 'ImageBuildRole', {
+            assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
+        });
+        const policy = new iam.PolicyStatement();
+        policy.addAllResources();
+        policy.addActions(
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:CompleteLayerUpload",
+            "ecr:GetAuthorizationToken",
+            "ecr:InitiateLayerUpload",
+            "ecr:PutImage",
+            "ecr:UploadLayerPart"
+        );
+        role.addToPolicy(policy);
+
+        {{#build}}
+        const build = new codebuild.PipelineProject(this, 'ImageBuildToECR', {
+            projectName: '{{project_name}}',
+            description: '{{description}}',
+            environmentVariables: {
+                'REPO_NAME': {
+                  value: ecrRepo.repositoryName,
+                  type: codebuild.BuildEnvironmentVariableType.PLAINTEXT
+                },
+                'REPO_PREFIX': {
+                  value: ecrRepo.repositoryUri,
+                  type: codebuild.BuildEnvironmentVariableType.PLAINTEXT
+                },
+            },
+            environment: {
+                buildImage: codebuild.LinuxBuildImage.{{image}},
+                privileged: true
+            },
+            buildSpec: codebuild.BuildSpec.fromSourceFilename('{{buildspec}}'),
+            {{#timeout}}
+            timeout: {{.}},
+            {{/timeout}}
+            role: role
+        });
+        {{/build}}
+
+        const buildOutput = new codepipeline.Artifact();
+        const buildStage = pipeline.addStage({
+            stageName: 'Build',
+            placement: {
+                justAfter: sourceStage
+            },
+            actions: [
+                new pipelineactions.CodeBuildAction({
+                    actionName: 'ImageBuildAction',
+                    input: sourceOutput,
+                    outputs: [ buildOutput ],
+                    project: build
+                })
+            ]
+        });
+        {{#migration}}
+
+        const migration = new codebuild.PipelineProject(this, 'DBMigration', {
+            projectName: '{{project_name}}',
+            description: '{{description}}',
+            environmentVariables: {
+                'DATABASE_URL': {
+                  value: props.dbUrl,
+                  type: codebuild.BuildEnvironmentVariableType.PLAINTEXT
+                }
+            },
+            environment:{
+                buildImage: codebuild.LinuxBuildImage.{{image}}
+            },
+            buildSpec: codebuild.BuildSpec.fromSourceFilename('{{buildspec}}'),
+            {{#timeout}}
+            timeout: {{.}},
+            {{/timeout}}
+            vpc: props.vpc,
+            subnetSelection: {
+                subnetType: ec2.SubnetType.PRIVATE
+            }
+        });
+        migration.connections.allowToDefaultPort(props.db, 'DB Migration CodeBuild');
+
+        const migrationStage = pipeline.addStage({
+            stageName: 'DBMigration',
+            placement: {
+                justAfter: buildStage
+            },
+            actions: [
+                new pipelineactions.CodeBuildAction({
+                    actionName: 'DBMigrationAction',
+                    project: migration,
+                    input: sourceOutput
+                })
+            ]
+        });
+        {{/migration}}
+
+        pipeline.addStage({
+            stageName: 'Deploy',
+            placement: {
+            {{#migration}}
+                justAfter: migrationStage
+            {{/migration}}
+            {{#skip_migration}}
+                justAfter: buildStage
+            {{/skip_migration}}
+            },
+            actions: [
+                new pipelineactions.EcsDeployAction({
+                    actionName: 'FargateDeployAction',
+                    service: props.service,
+                    input: buildOutput
+                })
+            ]
+        });
+    }
+}

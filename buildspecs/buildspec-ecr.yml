@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+    install:
+      commands:
+        - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+    pre_build:
+      commands:
+        - TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+        - echo $TAG
+        - docker build -t $REPO_NAME:$TAG .
+        - docker tag $REPO_NAME:$TAG $REPO_PREFIX:$TAG
+    post_build:
+      commands:
+        - docker push $REPO_PREFIX:$TAG
+        - CONTAINER_NAME='FargateTaskContainer'
+        - URI=$REPO_PREFIX:$TAG
+        - echo Writing image definitions file...
+        - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $URI > imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json

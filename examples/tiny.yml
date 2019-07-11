@@ -1,0 +1,12 @@
+version: '0'
+
+vpc:
+  enable_dns: true
+services:
+  my_rails:
+    source_path: ./path/to/my/rails
+    fargate:
+      public: true
+    db_cluster: # skip if no db
+      engine: aurora-postgresql
+      db_name: app_development

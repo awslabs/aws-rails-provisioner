@@ -1,0 +1,10 @@
+version: '0'
+vpc:
+  max_azs: 2
+services:
+  rails_no_db:
+    source_path: /path/to/rails
+    fargate:
+      desired_count: 1
+      envs:
+        RAILS_LOG_TO_STDOUT: true

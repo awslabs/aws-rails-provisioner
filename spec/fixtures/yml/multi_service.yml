@@ -1,0 +1,29 @@
+version: '0'
+
+vpc:
+  max_azs: 2
+  enable_dns: true
+services:
+  rails_foo:
+    source_path: /path/to/rails_foo
+    fargate:
+      desired_count: 1
+      public: true
+      envs:
+        PORT: 80
+    db_cluster:
+      stub_client: true
+      engine: aurora-mysql
+      db_name: app_development
+    scaling:
+      max_capacity: 2
+      on_cpu:
+        target_util_percent: 80
+        scale_in_cool_down: 300
+  rails_no_db:
+    source_path: /path/to/no_db
+    fargate:
+      desired_count: 1
+      public: true
+      envs:
+        PORT: 80

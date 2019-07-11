@@ -1,0 +1,16 @@
+version: '0'
+
+vpc:
+  max_azs: 2
+  enable_dns: true
+services:
+  rails_foo:
+    source_path: /path/to/rails_foo
+    fargate:
+      desired_count: 5
+      public: true
+    db_cluster:
+      engine: aurora-postgresql
+      db_name: app_development
+    cicd:
+       pipeline_name: RailsFoo

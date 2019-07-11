@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+import cdk = require('@aws-cdk/core');
+import { {{stack_prefix}}InitStack } from '../lib/{{path_prefix}}-init-stack';
+{{#stacks}}
+import { {{stack_prefix}}FargateStack } from '../lib/{{path_prefix}}-fargate-stack';
+{{#enable_cicd}}
+import { {{stack_prefix}}PipelineStack } from '../lib/{{path_prefix}}-pipeline-stack';
+{{/enable_cicd}}
+{{/stacks}}
+
+const app = new cdk.App();
+const initStack = new {{stack_prefix}}InitStack(app, '{{stack_prefix}}InitStack');
+{{#stacks}}
+
+// for service :{{name}}
+{{#enable_cicd}}const {{const_prefix}}FargateStack = {{/enable_cicd}}new {{stack_prefix}}FargateStack(app, '{{stack_prefix}}FargateStack', {
+    vpc: initStack.vpc,
+    cluster: initStack.cluster
+});
+
+{{#enable_cicd}}
+new {{stack_prefix}}PipelineStack(app, '{{stack_prefix}}PipelineStack', {
+    vpc: initStack.vpc,
+    dbUrl: {{const_prefix}}FargateStack.dbUrl,
+    db: {{const_prefix}}FargateStack.db,
+    repoName: {{const_prefix}}FargateStack.repoName,
+    service: {{const_prefix}}FargateStack.service
+});
+{{/enable_cicd}}
+{{/stacks}}
+
+app.synth();

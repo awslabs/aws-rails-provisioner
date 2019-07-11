@@ -1,0 +1,132 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'fileutils'
+
+# load the `aws-rails-provisioner` gem
+$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+require 'aws-rails-provisioner'
+
+# setup default options
+options = {
+  file_path: 'aws-rails-provisioner.yml'
+}
+options[ARGV[0].to_sym] = {}
+
+OptionParser.new do |opts|
+
+  opts.banner = "Usage: aws-rails-provisioner [command] [options]"
+  opts.separator("")
+  opts.separator("Commands:")
+  opts.separator("    build: generate CDK stacks from aws-rails-provisioner.yml")
+  opts.separator("    deploy: deploy generated CDK stacks")
+  opts.separator("")
+  opts.separator("Options:")
+
+  svc_name_msg = 'Service name. Changes apply to all services '\
+    'configured under :services if not provided'
+  opts.on('-s', '--service SERVICE_NAME', svc_name_msg) do |name|
+    options[:service_name] = name.to_sym
+  end
+
+  opts.on('-p', '--profile AWS_PROFILE_NAME', 'Used the indicated AWS profile') do |profile|
+    options[:profile] = profile
+  end
+
+  file_path_msg = 'File path to `aws-rails-provisioner.yml`, default to `aws-rails-provisioner.yml`'\
+    ' at current directory'
+  opts.on('-f', '--file YAML_FILE_PATH', file_path_msg) do |path|
+    options[:file_path] = path
+  end
+
+  dir_msg = "Directory where generated code lives, defaults to `cdk-sample`"
+  opts.on('-d', '--cdk-directory DIR_PATH', dir_msg) do |dir|
+    options[:cdk_dir] = dir
+  end
+
+  # Build
+  cicd_msg = "Enable CICD stack generation, use with `build`"
+  opts.on('--with-cicd', cicd_msg) do
+    if options[:build].nil?
+      raise Aws::RailsProvisioner::Errors::InvalidCommandOption.new('build', '--with-cicd')
+    end
+    options[:build][:enable_cicd] = true
+  end
+
+  # need to consider scenarios for dryrun
+  #opts.on('--dryrun') do
+    #options[:dryrun] = true
+  #end
+
+  # Deploy
+  init_msg = "Deploy the stack that creates VPC and ECS cluster"
+  opts.on('--init', init_msg) do
+    if options[:deploy].nil?
+      raise Aws::RailsProvisioner::Errors::InvalidCommandOption.new('deploy', '--init')
+    end
+    options[:deploy][:init] = true
+  end
+
+  fargate_msg = "Deploy the stack that creates Fargate service and DBCluster (if specificed)"
+  opts.on('--fargate', fargate_msg) do
+    if options[:deploy].nil?
+      raise Aws::RailsProvisioner::Errors::InvalidCommandOption.new('deploy', '--fargate')
+    end
+    options[:deploy][:fargate] = true
+  end
+
+  cicd_deploy_msg = "Deploy the stack that builds CICD flow"
+  opts.on('--cicd', cicd_deploy_msg) do
+    if options[:deploy].nil?
+      raise Aws::RailsProvisioner::Errors::InvalidCommandOption.new('deploy', '--cicd')
+    end
+    options[:deploy][:cicd] = true
+  end
+
+  opts.on('-h', '--help', 'Show help') do
+    puts opts
+    exit
+  end
+
+end.parse!
+
+config = Aws::RailsProvisioner::Utils.parse(options[:file_path])
+cdk_dir = options[:cdk_dir] || config[:cdk_dir] || 'cdk-sample'
+config[:cdk_dir] = cdk_dir
+
+# prepare codebuilder params
+if options[:build]
+  options[:build][:profile] = options[:profile]
+  options[:build][:file_path] = options[:file_path]
+  if svc_name = options[:service_name]
+    config[:services][svc_name].merge!(options[:build])
+  else
+    config[:services].each do |_, svc|
+      svc.merge!(options[:build])
+    end
+  end
+end
+code_builder = Aws::RailsProvisioner::CDKCodeBuilder.new(config)
+
+if options[:build]
+  Aws::RailsProvisioner::CDKBuilder.new(
+    cdk_dir: cdk_dir,
+    source_files: code_builder.source_files,
+    default_stack: code_builder.default_stack,
+    services: code_builder.services
+  ).run
+elsif options[:deploy]
+  deploy_params = {
+    cdk_dir: cdk_dir,
+    services: code_builder.services,
+    stack_prefix: code_builder.stack_prefix,
+    service_name: options[:service_name]
+  }
+  if options[:profile]
+    deploy_params[:profile] = profile
+  end
+  deploy_params.merge!(options[:deploy])
+  deployer = Aws::RailsProvisioner::CDKDeployer.new(deploy_params)
+  deployer.run
+end
