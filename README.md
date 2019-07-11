@@ -11,7 +11,7 @@ few commands.
 
 <!--BEGIN STABILITY BANNER-->
 ---
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+  ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 > This tool is under developer preview (beta) stage, with active development, releases might lack features and might have future breaking changes.
 ---
 <!--END STABILITY BANNER-->
