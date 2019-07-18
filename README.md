@@ -11,7 +11,7 @@ few commands.
 
 <!--BEGIN STABILITY BANNER-->
 ---
-  ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 > This tool is under developer preview (beta) stage, with active development, releases might lack features and might have future breaking changes.
 ---
 <!--END STABILITY BANNER-->
@@ -21,6 +21,7 @@ few commands.
 * [Change Log](./CHANGELOG.md)
 * [Issues](https://github.com/awslabs/aws-rails-provisioner/issues)
 * [License](http://aws.amazon.com/apache2.0/)
+* [Documentation](https://docs.aws.amazon.com/awsrailsprovisioner/api/)
 
 ## Getting Started
 
@@ -80,7 +81,7 @@ services:
     ...
 ```
 More `aws-rails-provisioner` examples see `./examples` (see `tiny.yml` for a minimal `aws-rails-provisioner.yml` configuration example),
-full configuration options documentation see release doc source (Online documentation coming soon ❤️ ).
+full configuration options documentation see [here](https://docs.aws.amazon.com/awsrailsprovisioner/api/).
 
 ### Build and Deploy
 
