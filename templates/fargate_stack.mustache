@@ -111,28 +111,30 @@ export class {{stack_prefix}}FargateStack extends cdk.Stack {
 
         {{#fargate}}
         // Fargate service
-        const lbFargate = new ecs_patterns.LoadBalancedFargateService(this, 'LBFargate', {
+        const lbFargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'LBFargate', {
             {{#service_name}}
             serviceName: '{{.}}',
             {{/service_name}}
             cluster: cluster,
-            image: image,
-            containerName: '{{container_name}}',
-            containerPort: {{container_port}},
+            taskImageOptions: {
+              image: image,
+              containerName: '{{container_name}}',
+              containerPort: {{container_port}},
+              environment: {
+                  {{#has_db}}
+                  'DATABASE_URL': dbUrl, 
+                  {{/has_db}}
+                  {{#envs}}
+                  {{{.}}}
+                  {{/envs}}
+              },
+              enableLogging: true,
+            },
             {{#certificate}}
             certificate: certificatemanager.Certificate.fromCertificateArn(this, 'Certificate', '{{.}}'),
             {{/certificate}}
             {{#memory}}memoryLimitMiB: {{.}},{{/memory}}
             {{#cpu}}cpu: {{.}},{{/cpu}}
-            environment: {
-                {{#has_db}}
-                'DATABASE_URL': dbUrl, 
-                {{/has_db}}
-                {{#envs}}
-                {{{.}}}
-                {{/envs}}
-            },
-            enableLogging: true,
             desiredCount: {{desired_count}},
             {{#domain_name}}
             domainName: '{{.}}',
@@ -142,7 +144,7 @@ export class {{stack_prefix}}FargateStack extends cdk.Stack {
             {{/domain_zone}}
             {{#public}}
             publicLoadBalancer: true,
-            publicTasks: true
+            assignPublicIp: true
             {{/public}}
         });
         {{#has_db}}

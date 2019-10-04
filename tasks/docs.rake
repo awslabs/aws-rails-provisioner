@@ -13,8 +13,8 @@ end
 desc 'Generate the API documentation.'
 task 'docs' => 'docs:clobber' do
   env = {}
-  #env['DOCSTRINGS'] = '1'
-  #env['BASEURL'] = 'http://docs.aws.amazon.com/'
-  #env['SITEMAP_BASEURL'] = 'http://docs.aws.amazon.com/awsprovisioner/api/'
+  env['DOCSTRINGS'] = '1'
+  env['BASEURL'] = 'http://docs.aws.amazon.com/'
+  env['SITEMAP_BASEURL'] = 'http://docs.aws.amazon.com/awsrailsprovisioner/api/'
   sh(env, 'bundle exec yard')
 end
