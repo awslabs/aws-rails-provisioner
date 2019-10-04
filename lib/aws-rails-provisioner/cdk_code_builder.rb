@@ -107,6 +107,11 @@ module Aws::RailsProvisioner
       "#{@cdk_dir}/lib/#{@cdk_dir}-stack.ts"
     end
 
+    def default_test
+      # CDK init cmd default test file
+      "#{@cdk_dir}/test/#{@cdk_dir}.test.ts"
+    end
+
     # @api private
     def project
       Aws::RailsProvisioner::Views::Project.new(

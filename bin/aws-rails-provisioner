@@ -114,6 +114,7 @@ if options[:build]
     cdk_dir: cdk_dir,
     source_files: code_builder.source_files,
     default_stack: code_builder.default_stack,
+    default_test: code_builder.default_test,
     services: code_builder.services
   ).run
 elsif options[:deploy]

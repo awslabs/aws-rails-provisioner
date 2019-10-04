@@ -4,6 +4,7 @@ module Aws::RailsProvisioner
     def initialize(options = {})
       @source_files = options[:source_files]
       @default_stack = options[:default_stack]
+      @default_test = options[:default_test]
       @cdk_dir = options[:cdk_dir]
       @services = options[:services]
     end
@@ -40,6 +41,9 @@ module Aws::RailsProvisioner
 
           if File.exists?(@default_stack)
             FileUtils.rm_f(@default_stack)
+          end
+          if File.exists?(@default_test)
+            FileUtils.rm_f(@default_test)
           end
         end
       end
