@@ -72,21 +72,23 @@ export class RailsFooFargateStack extends cdk.Stack {
         const image = ecs.ContainerImage.fromEcrRepository(ecrRepo);
 
         // Fargate service
-        const lbFargate = new ecs_patterns.LoadBalancedFargateService(this, 'LBFargate', {
+        const lbFargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'LBFargate', {
             serviceName: 'RailsFoo',
             cluster: cluster,
-            image: image,
-            containerName: 'FargateTaskContainer',
-            containerPort: 80,
+            taskImageOptions: {
+              image: image,
+              containerName: 'FargateTaskContainer',
+              containerPort: 80,
+              environment: {
+                  'DATABASE_URL': dbUrl, 
+              },
+              enableLogging: true,
+            },
             memoryLimitMiB: 512,
             cpu: 256,
-            environment: {
-                'DATABASE_URL': dbUrl, 
-            },
-            enableLogging: true,
             desiredCount: 5,
             publicLoadBalancer: true,
-            publicTasks: true
+            assignPublicIp: true
         });
         db.connections.allowDefaultPortFrom(lbFargate.service, 'From Fargate');
         this.db = db;

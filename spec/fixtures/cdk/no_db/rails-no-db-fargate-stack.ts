@@ -36,18 +36,20 @@ export class RailsNoDbFargateStack extends cdk.Stack {
         const image = ecs.ContainerImage.fromEcrRepository(ecrRepo);
 
         // Fargate service
-        const lbFargate = new ecs_patterns.LoadBalancedFargateService(this, 'LBFargate', {
+        const lbFargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'LBFargate', {
             serviceName: 'RailsNoDb',
             cluster: cluster,
-            image: image,
-            containerName: 'FargateTaskContainer',
-            containerPort: 80,
+            taskImageOptions: {
+              image: image,
+              containerName: 'FargateTaskContainer',
+              containerPort: 80,
+              environment: {
+                  'RAILS_LOG_TO_STDOUT': 'true',
+              },
+              enableLogging: true,
+            },
             memoryLimitMiB: 512,
             cpu: 256,
-            environment: {
-                'RAILS_LOG_TO_STDOUT': 'true',
-            },
-            enableLogging: true,
             desiredCount: 1,
         });
         this.service = lbFargate.service;
