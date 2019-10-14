@@ -1,4 +1,4 @@
-Unreleased Changes
+0.0.1.rc2 (2019-10-14)
 -----------------
 
 * Issue - Update `LoadBalancerFargate` to `ApplicationLoadBalancerFargate`
