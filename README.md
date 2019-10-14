@@ -42,7 +42,7 @@ Before using the `aws-rails-provisioner` gem, you need to have
 `aws-rails-provisioner` gem is available from RubyGems, currently with [preview versions](https://rubygems.org/gems/aws-rails-provisioner).
 
 ```
-gem install 'aws-rails-provisioner' --pre
+gem install aws-rails-provisioner --pre
 ```
 
 ### Define aws-rails-provisioner.yml
