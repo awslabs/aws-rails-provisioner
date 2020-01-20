@@ -125,7 +125,7 @@ elsif options[:deploy]
     service_name: options[:service_name]
   }
   if options[:profile]
-    deploy_params[:profile] = profile
+    deploy_params[:profile] = options[:profile]
   end
   deploy_params.merge!(options[:deploy])
   deployer = Aws::RailsProvisioner::CDKDeployer.new(deploy_params)
