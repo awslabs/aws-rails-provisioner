@@ -1,7 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import ecr = require('@aws-cdk/aws-ecr');
 import ecs_patterns = require('@aws-cdk/aws-ecs-patterns');
 import ecr_assets = require('@aws-cdk/aws-ecr-assets');
 import rds = require('@aws-cdk/aws-rds');
@@ -32,8 +31,7 @@ export class RailsNoDbFargateStack extends cdk.Stack {
         const repoName = parts.slice(1, parts.length).join("/").split(":")[0];
         this.repoName = repoName;
 
-        const ecrRepo = ecr.Repository.fromRepositoryName(this, 'EcrRepo', repoName);
-        const image = ecs.ContainerImage.fromEcrRepository(ecrRepo);
+        const image = ecs.ContainerImage.fromDockerImageAsset(asset);
 
         // Fargate service
         const lbFargate = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'LBFargate', {
