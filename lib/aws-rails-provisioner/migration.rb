@@ -20,7 +20,7 @@ module Aws::RailsProvisioner
     #   to `buildspec-db.yml` under root directory, using template under
     #   `buildspecs/`
     #
-    # @option options [String] :build_image default to codebuild `standard_1_0`
+    # @option options [String] :build_image default to codebuild `standard_4_0`
     #   full list of supported images see:
     #   https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-codebuild.LinuxBuildImage.html
     #
@@ -36,7 +36,7 @@ module Aws::RailsProvisioner
         options[:buildspec] = 'buildspec-db.yml'
       end
       unless options[:build_image]
-        options[:build_image] = 'standard_1_0'
+        options[:build_image] = 'standard_4_0'
       end
       # TODO envs support?
       super(options)

@@ -1,6 +1,6 @@
 require 'aws-sdk-rds'
 
-module Aws::RailsProvisioner 
+module Aws::RailsProvisioner
   class DBCluster
 
     # Configuration value under :db_cluster
@@ -59,9 +59,9 @@ module Aws::RailsProvisioner
     #
     #   @example: at `aws-rails-provisioner.yml`
     #     parameter_group:
-    #       family: 'aurora-postgresql9.6'
+    #       family: 'aurora-postgresql11'
     #       description: 'created by AWS RailsProvisioner'
-    #       parameters: 
+    #       parameters:
     #         key: value
     #   @see {Aws::RailsProvisioner::DBCluster::ParameterGroup}
     #
@@ -178,7 +178,7 @@ module Aws::RailsProvisioner
     end
 
     class ParameterGroup
-      
+
       # @param [Hash] options
       #
       # @option options [String] :family
@@ -223,7 +223,7 @@ module Aws::RailsProvisioner
 
       def _default_family
         case @engine
-        when 'AURORA_POSTGRESQL' then 'aurora-postgresql9.6'
+        when 'AURORA_POSTGRESQL' then 'aurora-postgresql11'
         when 'AURORA_MYSQL' then 'aurora-mysql5.7'
         when 'AURORA' then 'aurora5.6'
         else
@@ -277,7 +277,7 @@ module Aws::RailsProvisioner
       when 'AURORA' then 'r5.large'
       else
         msg = 'Failed to locate a default instance type for :engine'\
-          ' provided, please provide :instance_type' 
+          ' provided, please provide :instance_type'
         raise Aws::RailsProvisioner::Errors::ValidationError, msg
       end
     end
@@ -289,7 +289,7 @@ module Aws::RailsProvisioner
       when 'AURORA' then 3306
       else
         msg = 'Failed to locate a default db port for :engine'\
-          ' provided, please provide :port' 
+          ' provided, please provide :port'
         raise Aws::RailsProvisioner::Errors::ValidationError, msg
       end
 

@@ -45,7 +45,6 @@ module Aws::RailsProvisioner
         base = [
           { abbr: 'ec2', value: 'ec2' },
           { abbr: 'ecs', value: 'ecs' },
-          { abbr: 'ecr', value: 'ecr' },
           { abbr: 'ecs_patterns', value: 'ecs-patterns' },
           { abbr: 'ecr_assets', value: 'ecr-assets' },
           { abbr: 'rds', value: 'rds' }

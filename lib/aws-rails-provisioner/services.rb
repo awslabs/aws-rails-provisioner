@@ -1,20 +1,20 @@
 module Aws::RailsProvisioner
   # @api private
   class ServiceEnumerator
-    
+
     include Enumerable
 
     def initialize(options = {})
-      @configs = options || {}      
+      @configs = options || {}
     end
 
-    # @param [String] name 
+    # @param [String] name
     def [](name)
       if services.key?(name)
         services[name]
       else
-        msg = "unknown service #{identifier.inspect} under :services"
-        raise Aws::RailsProvisioner::ValidationError, msg
+        msg = "unknown service #{name} under :services"
+        raise Aws::RailsProvisioner::Errors::ValidationError, msg
       end
     end
     alias service []
