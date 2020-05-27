@@ -106,7 +106,7 @@ export class RailsFooPipelineStack extends cdk.Stack {
                 }
             },
             environment:{
-                buildImage: codebuild.LinuxBuildImage.STANDARD_1_0
+                buildImage: codebuild.LinuxBuildImage.STANDARD_4_0
             },
             buildSpec: codebuild.BuildSpec.fromSourceFilename('buildspec-db.yml'),
             vpc: props.vpc,

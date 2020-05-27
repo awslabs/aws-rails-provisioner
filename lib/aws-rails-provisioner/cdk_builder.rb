@@ -56,6 +56,7 @@ module Aws::RailsProvisioner
       end
       Dir.chdir(@cdk_dir) do
         pkgs.each do |pkg|
+          puts "installing pkg: #{pkg} ..."
           `npm install #{pkg}`
         end
       end
@@ -64,7 +65,7 @@ module Aws::RailsProvisioner
     def _npm_build
       Dir.chdir(@cdk_dir) do
         puts "running npm run build ..."
-        `npm run build`
+        `npm run build --verbose`
       end
     end
 

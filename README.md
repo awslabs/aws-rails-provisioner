@@ -4,10 +4,7 @@
 
 A tool for defining and deploying containerized Ruby on Rails applications on AWS.
 
-`aws-rails-provisioner` is a command line tool using your configurations defined in `aws-rails-provisioner.yml` file to generate 
-[AWS CDK](https://github.com/awslabs/aws-cdk) stacks on your behalf, provisioning required AWS resources
-for running your containerized Ruby on Rails applications on AWS (current supported platform: AWS Fargate) within
-few commands.
+`aws-rails-provisioner` is a command line tool using your configurations defined in `aws-rails-provisioner.yml` file to generate [AWS CDK](https://github.com/awslabs/aws-cdk) stacks on your behalf, provisioning required AWS resources for running your containerized Ruby on Rails applications on AWS (current supported platform: AWS Fargate) within a few commands.
 
 <!--BEGIN STABILITY BANNER-->
 ---
@@ -27,9 +24,9 @@ few commands.
 
 ### Prerequisites
 
-Before using the `aws-rails-provisioner` gem, you need to have 
+Before using the `aws-rails-provisioner` gem, you need to have:
 
-* a [Ruby on Rails](https://rubyonrails.org/) application with Dockerfile 
+* a [Ruby on Rails](https://rubyonrails.org/) application with a Dockerfile
 * install or update the [AWS CDK Toolkit] from npm (requires [Node.js ≥ 8.11.x](https://nodejs.org/en/download)):
 
   ```bash
@@ -47,8 +44,7 @@ gem install aws-rails-provisioner --pre
 
 ### Define aws-rails-provisioner.yml
 
-`aws-rails-provisioner.yml` is a configuration file defining how `aws-rails-provisioner` bootstraps required AWS resources
-for your Ruby on Rails applications.
+`aws-rails-provisioner.yml` is a configuration file defining how `aws-rails-provisioner` bootstraps required AWS resources for your Ruby on Rails applications.
 
 ```
 version: '0'
@@ -80,33 +76,30 @@ services:
   my_another_rails:
     ...
 ```
-More `aws-rails-provisioner` examples see `./examples` (see `tiny.yml` for a minimal `aws-rails-provisioner.yml` configuration example),
-full configuration options documentation see [here](https://docs.aws.amazon.com/awsrailsprovisioner/api/).
+
+See `./examples` for more `aws-rails-provisioner` examples (see `tiny.yml` for a minimal `aws-rails-provisioner.yml` configuration example). The full configuration options are documented [here](https://docs.aws.amazon.com/awsrailsprovisioner/api/).
 
 ### Build and Deploy
 
-Once `aws-rails-provisioner.yml` is defined, run build command as following will boostrap AWS CDK stacks in code
-defining all required AWS resources and connections.
+Once `aws-rails-provisioner.yml` is defined, run the build command. This will boostrap AWS CDK stacks and define all required AWS resources and connections.
 
 ```
 aws-rails-provisioner build
 ```
 
-By default, it defines a VPC with public and private subnets, Amazon RDS Database Cluster, an ECS cluster with
-AWS Fargate services containing application images, when run build with `--with-cicd` option as following
-an CICD stack will be defined automatically (including data migration step)
+By default, it defines a VPC with public and private subnets, an Amazon RDS Database Cluster, an ECS cluster with AWS Fargate services containing application images. When building with `--with-cicd` option a CICD stack will be defined automatically (including a Rails data migration step).
 
 ```
 aws-rails-provisioner build --with-cicd
 ```
 
-After build complete, run the deploy command to deploy all defined AWS resources
+After the build completes, run the deploy command to deploy all defined AWS resources:
 
 ```
 aws-rails-provisioner deploy
 ```
 
-Instead of deploy everything all at once, you can deploy stack by stack, application by application
+Instead of deploy everything all at once, you can deploy stack by stack, application by application:
 
 ```
 # only deploys the stack creates VPC and ECS cluster
@@ -119,21 +112,16 @@ aws-rails-provisioner deploy --fargate
 aws-rails-provisioner deploy --cicd
 
 # deploy only :rails_foo application
-aws-rails-provisioner deploy --fargate --service rails_foo
+aws-rails-provisioner deploy --fargate --service my_rails_foo
 ```
 
-After deployment completes, your applications are running on AWS Fargate fronted with AWS Application
-LoadBalancer.
+After the deployment completes, your applications are now running on AWS Fargate fronted with AWS Application LoadBalancer. You can view your website using the public IP address of the network interface's load balancer.
 
-> Note: for applications with databases, rails migration is needed, CICD stack contains a migration phase
-by default, running DB migration commands insides private subnets, talking to DB Cluster.
+> Note: for applications with databases, rails db migration is needed; the CICD stack contains a migration phase by default, running DB migration commands insides private subnets, connected to the DB Cluster.
 
 ### CICD
 
-When have `--with-cicd` enabled at build, a CICD stack is available. Once deployment completes, an AWS
-CodePipeline is available with source, build, migration and deploy phases. You need to commit
-your local Rails application to the source repository in the pipeline with `buildspec` to activate the pipeline.
-Sample `buildspec`s are availble under `./buildspecs` handling application image build and rails migration.
+When `--with-cicd` is enabled at build, a CICD stack is created. Once deployment completes, an AWS CodePipeline is available with source, build, migration, and deploy phases. You need to commit your local Rails application to the CodeCommit source repository in the pipeline with `buildspec` files to activate the pipeline. Sample `buildspec`s are availble under `./buildspecs` handling application image builds and rails migrations.
 
 Full `aws-rails-provisioner` command line options see:
 
@@ -147,14 +135,11 @@ We welcome community contributions and pull requests. See [CONTRIBUTING](./CONTR
 
 ## Getting Help
 
-Please use these community resources for getting help. We use the GitHub issues
-for tracking bugs and feature requests.
+Please use these community resources for getting help. We use the GitHub issues for tracking bugs and feature requests.
 
-* Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-rails-provisioner)
-    and tag it with `aws-rails-provisioner`
+* Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-rails-provisioner) and tag it with `aws-rails-provisioner`
 * If it turns out that you may have found a bug, or want to submit a feature request, please open an [issue](https://github.com/awslabs/aws-cdk/issues/new)
 
 ## License
 
-The `aws-rails-provisioner` is distributed under [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-See [LICENSE](./LICENSE.txt) for more information.
+The `aws-rails-provisioner` is distributed under [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). See [LICENSE](./LICENSE.txt) for more information.

@@ -20,6 +20,7 @@ module Aws::RailsProvisioner
 
     def run
       Dir.chdir(@cdk_dir) do
+        `cdk bootstrap`
         deploy_init_stack
         unless @init_stack_only
           if @svc_name
