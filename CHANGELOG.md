@@ -1,6 +1,14 @@
 Unreleased Changes
 ------------------
 
+* Issue - Run `cdk bootstrap` automatically.
+
+* Issue - Use docker image asset instead of repo from ECR (fixes failed builds).
+
+* Issue - Upgrade postgresql DB engine family.
+
+* Issue - Fix `--profile` option being ignored.
+
 0.0.1.rc2 (2019-10-14)
 -----------------
 
