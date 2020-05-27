@@ -81,7 +81,7 @@ See `./examples` for more `aws-rails-provisioner` examples (see `tiny.yml` for a
 
 ### Build and Deploy
 
-Once `aws-rails-provisioner.yml` is defined, run the build command. This will boostrap AWS CDK stacks and define all required AWS resources and connections.
+Once `aws-rails-provisioner.yml` is defined, run the build command. This will boostrap AWS CDK stacks and define all required AWS resources and connections in CDK code.
 
 ```
 aws-rails-provisioner build
@@ -93,13 +93,13 @@ By default, it defines a VPC with public and private subnets, an Amazon RDS Data
 aws-rails-provisioner build --with-cicd
 ```
 
-After the build completes, run the deploy command to deploy all defined AWS resources:
+After the build completes, run the deploy command to run CDK code that deploys all defined AWS resources:
 
 ```
 aws-rails-provisioner deploy
 ```
 
-Instead of deploy everything all at once, you can deploy stack by stack, application by application:
+Instead of deploying everything all at once, you can deploy stack by stack, application by application:
 
 ```
 # only deploys the stack creates VPC and ECS cluster
@@ -121,7 +121,7 @@ After the deployment completes, your applications are now running on AWS Fargate
 
 ### CICD
 
-When `--with-cicd` is enabled at build, a CICD stack is created. Once deployment completes, an AWS CodePipeline is available with source, build, migration, and deploy phases. You need to commit your local Rails application to the CodeCommit source repository in the pipeline with `buildspec` files to activate the pipeline. Sample `buildspec`s are availble under `./buildspecs` handling application image builds and rails migrations.
+When `--with-cicd` is enabled at build, a CICD stack is created. Once deployment completes, an AWS CodePipeline is available with source, build, migration, and deploy phases for your Rails application. You need to commit your Rails application to the CodeCommit source repository in the pipeline with `buildspec` files to activate the pipeline. Sample `buildspec`s are availble under `./buildspecs` handling application image builds and rails migrations.
 
 Full `aws-rails-provisioner` command line options see:
 
