@@ -1,4 +1,4 @@
-Unreleased Changes
+0.0.2.rc3 (2020-05-27)
 ------------------
 
 * Issue - Run `cdk bootstrap` automatically.
