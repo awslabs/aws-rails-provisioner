@@ -34,7 +34,7 @@ export class {{stack_prefix}}FargateStack extends cdk.Stack {
         {{#parameter_group}}
         {{#cfn}}
         // Create DB Cluster ParameterGroup
-        const clusterParameterGroup = new rds.ClusterParameterGroup(this, 'DBClusterPG', {
+        const parameterGroup = new rds.ParameterGroup(this, 'DBClusterPG', {
             description: '{{description}}',
             family: '{{family}}',
             parameters: {
@@ -46,7 +46,7 @@ export class {{stack_prefix}}FargateStack extends cdk.Stack {
         {{/cfn}}
         {{#name}}
         // Import DB cluster ParameterGroup
-        const clusterParameterGroup = rds.ClusterParameterGroup.fromParameterGroupName(
+        const parameterGroup = rds.ParameterGroup.fromParameterGroupName(
             this, 'DBClusterPG', '{{.}}');
         {{/name}}
         {{/parameter_group}}
@@ -91,7 +91,7 @@ export class {{stack_prefix}}FargateStack extends cdk.Stack {
             instanceIdentifierBase: '{{.}}',
             {{/instance_identifier}}
             instances: {{instances}},
-            parameterGroup: clusterParameterGroup
+            parameterGroup: parameterGroup
         });
         const dbUrl = {{#postgres}}"postgres://"{{/postgres}}{{^postgres}}"mysql2://"{{/postgres}} + username + ":" + password + "@" + db.clusterEndpoint.socketAddress + "/{{db_name}}";
         this.dbUrl = dbUrl;

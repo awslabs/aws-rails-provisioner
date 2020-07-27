@@ -1,6 +1,8 @@
 Unreleased Changes
 ------------------
 
+* Issue - Use `ParameterGroup` as `ClusterParameterGroup` was removed. (#14)
+
 0.0.2.rc3 (2020-05-27)
 ------------------
 

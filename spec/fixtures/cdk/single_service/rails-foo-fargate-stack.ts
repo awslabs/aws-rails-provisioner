@@ -34,7 +34,7 @@ export class RailsFooFargateStack extends cdk.Stack {
         const password = secret.secretValue;
 
         // Import DB cluster ParameterGroup
-        const clusterParameterGroup = rds.ClusterParameterGroup.fromParameterGroupName(
+        const parameterGroup = rds.ParameterGroup.fromParameterGroupName(
             this, 'DBClusterPG', 'aws-rails-provisioner-default-aurora-postgresql');
         // Create DB Cluster
         const db = new rds.DatabaseCluster(this, 'DBCluster', {
@@ -53,7 +53,7 @@ export class RailsFooFargateStack extends cdk.Stack {
             defaultDatabaseName: 'app_development',
             removalPolicy: cdk.RemovalPolicy.RETAIN,
             instances: 2,
-            parameterGroup: clusterParameterGroup
+            parameterGroup: parameterGroup
         });
         const dbUrl = "postgres://" + username + ":" + password + "@" + db.clusterEndpoint.socketAddress + "/app_development";
         this.dbUrl = dbUrl;
