@@ -1,9 +1,8 @@
-.yardoc
+.ruby-version
+.yardoc/
 Gemfile.lock
-_yardoc
-doc/
-.DS_Store
-package-lock.json
+doc
 
 aws-rails-provisioner.yml
 cdk-sample/
+package-lock.json

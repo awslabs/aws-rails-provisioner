@@ -10,7 +10,7 @@ group :docs do
 end
 
 group :test do
-  gem 'rspec', '~> 3'
+  gem 'rspec'
 end
 
 group :release do
