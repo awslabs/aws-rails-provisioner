@@ -1,4 +1,10 @@
-# aws-rails-provisioner
+# This tool is deprecated
+
+This tool is deprecated. We cannot guarantee that it will work.
+
+This documentation will remain for historical purposes.
+
+## aws-rails-provisioner
 
 [![Build Status](https://travis-ci.org/awslabs/aws-rails-provisioner.svg?branch=master)](https://travis-ci.org/awslabs/aws-rails-provisioner)
 
